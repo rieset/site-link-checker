@@ -20,7 +20,7 @@ class Checker {
         const Crawler = __nccwpck_require__(1457);
         this.host = host;
         this.options = options;
-        this.ignored = ((_a = options.ignore) === null || _a === void 0 ? void 0 : _a.split(',')) || null;
+        this.ignored = ((_a = options.ignore) === null || _a === void 0 ? void 0 : _a.split(',')) || [];
         this.depth = options.depth;
         this.crawler = new Crawler({
             maxConnections: 2,
@@ -42,7 +42,7 @@ class Checker {
         else if (uri.startsWith('http://')) {
             // If the URI starts with 'http://', it is invalid due to using an insecure protocol
             done({
-                code: 403,
+                code: 400,
                 op: 'fail',
                 message: 'Please replace protocol'
             });
@@ -236,7 +236,8 @@ class Checker {
         return new Promise((resolve) => {
             // Event listener for the 'drain' event, which indicates that the crawler has finished processing all queued tasks
             this.crawler.on('drain', () => {
-                console.log('\n\nChecked links without errors', Object.keys(this.checkedPages).length);
+                console.log('\n\nChecked links', Object.keys(this.checkedPages).length);
+                console.log('\n\nIgnored links\n\t', this.ignored.map((link) => '\n\t' + link));
                 if (Object.keys(this.pagesWithErrors).length) {
                     // If there are pages with errors, iterate through each page and its corresponding URIs with errors
                     Object.keys(this.pagesWithErrors).forEach((page) => {
