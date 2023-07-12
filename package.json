@@ -1,5 +1,5 @@
 {
-  "name": "site-link-checker",
+  "name": "@rieset/site-link-checker",
   "version": "0.0.1",
   "description": "",
   "main": "./dist/common.js",
