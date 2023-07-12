@@ -8,18 +8,23 @@ on:
     types: [created]
 
 jobs:
-  build:
+  test:
+    name: Test install and build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 18
-      - run: npm ci
-      - run: npm test
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test package
+        run: npm run test
 
   publish-npm:
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -27,7 +32,19 @@ jobs:
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
+
+      - name: Update version
+        run: |
+          git config user.email "albert@iblyaminov.io"
+          git config user.name "Albert Iblyaminov"
+          npm version ${GITHUB_REF#refs/tags/v.} --no-verify
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build
+
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
