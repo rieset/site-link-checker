@@ -9,4 +9,5 @@ export interface CheckedItem {
   depth: number;
   page: string;
   type: 'file' | 'link';
+  jquery?: boolean;
 }
