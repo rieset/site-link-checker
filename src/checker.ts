@@ -32,10 +32,11 @@ export class Checker {
     this.depth = options.depth;
 
     this.crawler = new Crawler({
+      timeout: 60000,
       maxConnections: 5,
       preRequest: this.preRequest.bind(this),
       callback: this.callback.bind(this),
-      retries: 0,
+      retries: 1,
     });
   }
 
@@ -55,6 +56,12 @@ export class Checker {
         code: 400,
         op: 'fail',
         message: 'Please replace protocol'
+      });
+    } else if (/^https:\/\/[^\/]+\/cdn-cgi\/.+$/.test(uri)) {
+      done({
+        code: 100,
+        op: 'abort',
+        message: 'Link generated cloudflare'
       });
     } else if (this.checkedPages[uri]) {
       // If the page has already been checked, return the previous result
@@ -234,11 +241,6 @@ export class Checker {
 
     for (let i = 0; i < images.length; i++) {
       let src = this.prepareUri(images[i]?.attribs?.src);
-
-      if (!src) {
-        // If the 'src' attribute is not available, try to construct the source URL using other attributes
-        src = this.prepareUri(images[i]?.attribs['ng-reflect-lazy-image'] + images[i]?.attribs['ng-reflect-default-image']);
-      }
 
       if (!src) {
         continue; // If the source URL is still not available, skip to the next image

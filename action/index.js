@@ -23,7 +23,7 @@ class Checker {
         this.ignored = ((_a = options.ignore) === null || _a === void 0 ? void 0 : _a.split(',')) || [];
         this.depth = options.depth;
         this.crawler = new Crawler({
-            maxConnections: 2,
+            maxConnections: 5,
             preRequest: this.preRequest.bind(this),
             callback: this.callback.bind(this),
             retries: 0,
@@ -45,6 +45,13 @@ class Checker {
                 code: 400,
                 op: 'fail',
                 message: 'Please replace protocol'
+            });
+        }
+        else if (/^https:\/\/[^\/]+\/cdn-cgi\//.test(uri)) {
+            done({
+                code: 100,
+                op: 'abort',
+                message: 'Link generated cloudflare'
             });
         }
         else if (this.checkedPages[uri]) {
@@ -214,7 +221,8 @@ class Checker {
                 uri: src,
                 depth: options.depth + 1,
                 page: options.uri,
-                type: 'file'
+                type: 'file',
+                jquery: false,
             };
             if (options.depth < this.depth) {
                 // Add the task to the crawler's queue if the depth is within the allowed limit
