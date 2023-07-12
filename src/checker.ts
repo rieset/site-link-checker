@@ -278,7 +278,7 @@ export class Checker {
       // Event listener for the 'drain' event, which indicates that the crawler has finished processing all queued tasks
       this.crawler.on('drain', () => {
         console.log('\n\nChecked links', Object.keys(this.checkedPages).length);
-        console.log('\n\nIgnored links\n\t', this.ignored.map((link) => '\n\t' + link));
+        console.log('\n\nIgnored links\n', this.ignored.map((link) => '- ' + link).join('\n'));
 
         if (Object.keys(this.pagesWithErrors).length) {
           // If there are pages with errors, iterate through each page and its corresponding URIs with errors

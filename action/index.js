@@ -23,10 +23,11 @@ class Checker {
         this.ignored = ((_a = options.ignore) === null || _a === void 0 ? void 0 : _a.split(',')) || [];
         this.depth = options.depth;
         this.crawler = new Crawler({
+            timeout: 60000,
             maxConnections: 5,
             preRequest: this.preRequest.bind(this),
             callback: this.callback.bind(this),
-            retries: 0,
+            retries: 1,
         });
     }
     preRequest(options, done) {
@@ -47,7 +48,7 @@ class Checker {
                 message: 'Please replace protocol'
             });
         }
-        else if (/^https:\/\/[^\/]+\/cdn-cgi\//.test(uri)) {
+        else if (/^https:\/\/[^\/]+\/cdn-cgi\/.+$/.test(uri)) {
             done({
                 code: 100,
                 op: 'abort',
@@ -203,17 +204,13 @@ class Checker {
      * @param options
      */
     findImagesAndAddTaskToQueue(body, options) {
-        var _a, _b, _c, _d;
+        var _a, _b;
         if (!body || !body.$) {
             return;
         }
         const images = body.$('img');
         for (let i = 0; i < images.length; i++) {
             let src = this.prepareUri((_b = (_a = images[i]) === null || _a === void 0 ? void 0 : _a.attribs) === null || _b === void 0 ? void 0 : _b.src);
-            if (!src) {
-                // If the 'src' attribute is not available, try to construct the source URL using other attributes
-                src = this.prepareUri(((_c = images[i]) === null || _c === void 0 ? void 0 : _c.attribs['ng-reflect-lazy-image']) + ((_d = images[i]) === null || _d === void 0 ? void 0 : _d.attribs['ng-reflect-default-image']));
-            }
             if (!src) {
                 continue; // If the source URL is still not available, skip to the next image
             }
