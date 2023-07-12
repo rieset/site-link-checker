@@ -1,0 +1,11 @@
+# Configs
+.*
+!.github
+!.gitignore
+
+# Libs
+node_modules
+yarn.lock
+
+#Sitemap
+sitemap.xml
