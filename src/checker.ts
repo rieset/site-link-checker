@@ -37,6 +37,7 @@ export class Checker {
       preRequest: this.preRequest.bind(this),
       callback: this.callback.bind(this),
       retries: 1,
+      interval: 3000
     });
   }
 
